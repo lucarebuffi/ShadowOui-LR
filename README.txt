@@ -1,4 +1,4 @@
 ShadowOui - LR
 ======
 
-Widget Developed by Luca Rebuffi for personal use.
+Oasys/ShadowOui User Defined widgets developed by Luca Rebuffi for personal use.

@@ -15,11 +15,13 @@ README_FILE = os.path.join(os.path.dirname(__file__), 'README.txt')
 LONG_DESCRIPTION = open(README_FILE).read()
 AUTHOR = 'Luca Rebuffi'
 AUTHOR_EMAIL = 'luca.rebuffi@elettra.eu'
-URL = 'http://orange.biolab.si/'
+URL = 'http://github.com/lucarebuffi/ShadowOui-LR'
 DOWNLOAD_URL = 'http://github.com/lucarebuffi/ShadowOui-LR'
 LICENSE = 'GPLv3'
 
 KEYWORDS = (
+    'ray-tracing',
+    'simulator',
     'oasys',
 )
 
@@ -73,8 +75,8 @@ NAMESPACE_PACAKGES = ["orangecontrib"]
 
 
 ENTRY_POINTS = {
-    'orangecontrib' : ("shadow = orangecontrib.shadow", ),
-    'orange.widgets' : ("Shadow User Defined = orangecontrib.shadow.widgets.user_defined",
+    'oasys.addons' : ("shadow = orangecontrib.shadow", ),
+    'oasys.widgets' : ("Shadow User Defined = orangecontrib.shadow.widgets.user_defined",
     ),
 }
 
