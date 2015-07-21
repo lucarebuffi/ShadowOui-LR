@@ -71,7 +71,7 @@ INSTALL_REQUIRES = (
                    ),
 
 
-NAMESPACE_PACAKGES = ["orangecontrib"]
+NAMESPACE_PACAKGES = ["orangecontrib", "orangecontrib.shadow", "orangecontrib.shadow.widgets"]
 
 
 ENTRY_POINTS = {
