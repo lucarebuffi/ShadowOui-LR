@@ -10,6 +10,7 @@ from orangecontrib.shadow.util.shadow_objects import EmittingStream, TTYGrabber,
     ShadowPreProcessorData, ShadowBeam, ShadowOpticalElement
 from orangecontrib.shadow.util.shadow_util import ShadowGui, ShadowMath
 
+
 class FocusingPolycapillary(ow_generic_element.GenericElement):
     name = "Focusing Polycapillary Lens"
     description = "User Defined: Focusing Polycapillary Lens"
