@@ -7,7 +7,7 @@ import subprocess
 
 NAME = 'ShadowOui-LR'
 
-VERSION = '1.0'
+VERSION = '1.0.6'
 ISRELEASED = False
 
 DESCRIPTION = 'Shadow, Ray-tracing simulation software, Customized utilities'
