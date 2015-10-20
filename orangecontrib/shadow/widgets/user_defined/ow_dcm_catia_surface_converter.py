@@ -6,7 +6,7 @@ from orangewidget.settings import Setting
 from PyQt4 import QtGui
 from PyQt4.QtGui import QApplication
 
-from orangecontrib.shadow.util.shadow_util import ShadowGui
+from oasys.widgets.gui import gui as oasysgui
 
 class DCMCatiaSurfaceConverter(widget.OWWidget):
 
@@ -40,27 +40,27 @@ class DCMCatiaSurfaceConverter(widget.OWWidget):
         self.setFixedWidth(590)
         self.setFixedHeight(390)
 
-        left_box_1 = ShadowGui.widgetBox(self.controlArea, "Ansys Surface", addSpace=True, orientation="vertical")
+        left_box_1 = oasysgui.widgetBox(self.controlArea, "Ansys Surface", addSpace=True, orientation="vertical")
 
-        select_file_box = ShadowGui.widgetBox(left_box_1, "", addSpace=True, orientation="horizontal", height=50)
+        select_file_box = oasysgui.widgetBox(left_box_1, "", addSpace=True, orientation="horizontal", height=50)
 
-        self.le_surface_file_name = ShadowGui.lineEdit(select_file_box, self, "surface_file_name", "Surface File Name", labelWidth=150, valueType=str, orientation="horizontal")
+        self.le_surface_file_name = oasysgui.lineEdit(select_file_box, self, "surface_file_name", "Surface File Name", labelWidth=150, valueType=str, orientation="horizontal")
         self.le_surface_file_name.setFixedWidth(300)
 
         pushButton = gui.button(select_file_box, self, "...")
         pushButton.clicked.connect(self.selectSurfaceFile)
 
-        ShadowGui.lineEdit(left_box_1, self, "x_min", "X Min", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "x_max", "X Max", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "y_min", "Y Min", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "y_max", "Y Max", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "x_min", "X Min", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "x_max", "X Max", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "y_min", "Y Min", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "y_max", "Y Max", labelWidth=350, valueType=float, orientation="horizontal")
 
         gui.separator(left_box_1)
 
-        ShadowGui.lineEdit(left_box_1, self, "number_of_x_cells", "Number of X cells", labelWidth=350, valueType=int, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "number_of_y_cells", "Number of Y cells", labelWidth=350, valueType=int, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "n_sigma_x", "N Sigma X", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(left_box_1, self, "n_sigma_y", "N Sigma Y", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "number_of_x_cells", "Number of X cells", labelWidth=350, valueType=int, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "number_of_y_cells", "Number of Y cells", labelWidth=350, valueType=int, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "n_sigma_x", "N Sigma X", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(left_box_1, self, "n_sigma_y", "N Sigma Y", labelWidth=350, valueType=float, orientation="horizontal")
 
         gui.separator(self.controlArea)
 

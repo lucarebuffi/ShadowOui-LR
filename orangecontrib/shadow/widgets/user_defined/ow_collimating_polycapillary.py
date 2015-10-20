@@ -2,13 +2,16 @@ import sys, numpy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
+from oasys.widgets.gui import gui as oasysgui
+from oasys.widgets import congruence
+
 from PyQt4 import QtGui
 from PyQt4.QtGui import QPalette, QColor, QFont
 
 from orangecontrib.shadow.widgets.gui import ow_generic_element
 from orangecontrib.shadow.util.shadow_objects import EmittingStream, TTYGrabber, ShadowTriggerIn, \
     ShadowPreProcessorData, ShadowBeam, ShadowOpticalElement
-from orangecontrib.shadow.util.shadow_util import ShadowGui, ShadowMath
+from orangecontrib.shadow.util.shadow_util import ShadowMath, ShadowCongruence
 
 class CollimatingPolycapillary(ow_generic_element.GenericElement):
     name = "Collimating Polycapillary Lens"
@@ -62,29 +65,29 @@ class CollimatingPolycapillary(ow_generic_element.GenericElement):
 
         tabs_setting = gui.tabWidget(self.controlArea)
 
-        tab_bas = ShadowGui.createTabPage(tabs_setting, "Basic Setting")
-        tab_adv = ShadowGui.createTabPage(tabs_setting, "Advanced Setting")
+        tab_bas = oasysgui.createTabPage(tabs_setting, "Basic Setting")
+        tab_adv = oasysgui.createTabPage(tabs_setting, "Advanced Setting")
 
-        lens_box = ShadowGui.widgetBox(tab_bas, "Input Parameters", addSpace=False, orientation="vertical", height=600, width=450)
+        lens_box = oasysgui.widgetBox(tab_bas, "Input Parameters", addSpace=False, orientation="vertical", height=600, width=450)
 
-        ShadowGui.lineEdit(lens_box, self, "source_plane_distance", "Source Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(lens_box, self, "image_plane_distance", "Image Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
-
-        gui.separator(lens_box)
-
-        ShadowGui.lineEdit(lens_box, self, "input_diameter", "Input Diameter [cm]", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(lens_box, self, "angular_acceptance", "Angular Acceptance [deg]", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(lens_box, self, "output_diameter", "Output Diameter [cm]", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(lens_box, self, "residual_divergence", "Residual Output Divergence [rad]", labelWidth=350, valueType=float, orientation="horizontal")
-        ShadowGui.lineEdit(lens_box, self, "lens_length", "Lens Total Length [cm]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "source_plane_distance", "Source Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "image_plane_distance", "Image Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
 
         gui.separator(lens_box)
 
-        ShadowGui.lineEdit(lens_box, self, "transmittance", "Lens Transmittance [%]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "input_diameter", "Input Diameter [cm]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "angular_acceptance", "Angular Acceptance [deg]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "output_diameter", "Output Diameter [cm]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "residual_divergence", "Residual Output Divergence [rad]", labelWidth=350, valueType=float, orientation="horizontal")
+        oasysgui.lineEdit(lens_box, self, "lens_length", "Lens Total Length [cm]", labelWidth=350, valueType=float, orientation="horizontal")
+
+        gui.separator(lens_box)
+
+        oasysgui.lineEdit(lens_box, self, "transmittance", "Lens Transmittance [%]", labelWidth=350, valueType=float, orientation="horizontal")
 
         gui.separator(self.controlArea, height=80)
 
-        button_box = ShadowGui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
+        button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
 
         button = gui.button(button_box, self, "Run Shadow/trace", callback=self.traceOpticalElement)
         font = QFont(button.font())
@@ -217,13 +220,13 @@ class CollimatingPolycapillary(ow_generic_element.GenericElement):
         pass
 
     def checkFields(self):
-        ShadowGui.checkPositiveNumber(self.source_plane_distance, "Distance from Source")
-        ShadowGui.checkPositiveNumber(self.image_plane_distance, "Image Plane Distance")
-        ShadowGui.checkStrictlyPositiveNumber(self.input_diameter, "Input Diameter")
-        ShadowGui.checkStrictlyPositiveAngle(self.angular_acceptance, "Angular Acceptance")
-        ShadowGui.checkStrictlyPositiveNumber(self.output_diameter, "Output Diameter")
-        ShadowGui.checkPositiveNumber(self.residual_divergence, "Residual Output Divergence")
-        ShadowGui.checkStrictlyPositiveNumber(self.lens_length, "Lens Total Length")
+        congruence.checkPositiveNumber(self.source_plane_distance, "Distance from Source")
+        congruence.checkPositiveNumber(self.image_plane_distance, "Image Plane Distance")
+        congruence.checkStrictlyPositiveNumber(self.input_diameter, "Input Diameter")
+        congruence.checkStrictlyPositiveAngle(self.angular_acceptance, "Angular Acceptance")
+        congruence.checkStrictlyPositiveNumber(self.output_diameter, "Output Diameter")
+        congruence.checkPositiveNumber(self.residual_divergence, "Residual Output Divergence")
+        congruence.checkStrictlyPositiveNumber(self.lens_length, "Lens Total Length")
 
         if self.output_diameter <= self.input_diameter:
             raise Exception("Output Diameter should be greater than Input diameter")
@@ -233,7 +236,7 @@ class CollimatingPolycapillary(ow_generic_element.GenericElement):
         if self.lens_length < slit_distance:
             raise Exception("Lens total Length should be greater than or equal to " + str(slit_distance))
 
-        ShadowGui.checkStrictlyPositiveNumber(self.transmittance, "Lens Transmittance")
+        congruence.checkStrictlyPositiveNumber(self.transmittance, "Lens Transmittance")
 
     def completeOperations(self, shadow_oe=None):
         self.setStatusMessage("Running SHADOW")
@@ -276,8 +279,8 @@ class CollimatingPolycapillary(ow_generic_element.GenericElement):
             self.setStatusMessage("")
             self.progressBarInit()
 
-            if ShadowGui.checkEmptyBeam(self.input_beam):
-                if ShadowGui.checkGoodBeam(self.input_beam):
+            if ShadowCongruence.checkEmptyBeam(self.input_beam):
+                if ShadowCongruence.checkGoodBeam(self.input_beam):
                     sys.stdout = EmittingStream(textWritten=self.writeStdOut)
 
                     self.checkFields()
@@ -308,7 +311,7 @@ class CollimatingPolycapillary(ow_generic_element.GenericElement):
     def setBeam(self, beam):
         self.onReceivingInput()
 
-        if ShadowGui.checkEmptyBeam(beam):
+        if ShadowCongruence.checkEmptyBeam(beam):
             self.input_beam = beam
 
             if self.is_automatic_run:
