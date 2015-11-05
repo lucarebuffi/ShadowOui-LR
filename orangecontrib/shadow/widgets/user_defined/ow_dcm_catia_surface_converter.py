@@ -1,14 +1,15 @@
 import sys, math, os, numpy
 
-from oasys.widgets import widget
+from oasys.widgets.widget import OWWidget
 from orangewidget import gui
 from orangewidget.settings import Setting
+from oasys.widgets import gui as oasysgui
+
+
 from PyQt4 import QtGui
 from PyQt4.QtGui import QApplication
 
-from oasys.widgets.gui import gui as oasysgui
-
-class DCMCatiaSurfaceConverter(widget.OWWidget):
+class DCMCatiaSurfaceConverter(OWWidget):
 
     name = "DCM CATIA Surface Converter"
     description = "User Defined: DCMCatiaSurfaceConverter"

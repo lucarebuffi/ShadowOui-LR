@@ -2,7 +2,7 @@ import sys, numpy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-from oasys.widgets.gui import gui as oasysgui
+from oasys.widgets import gui as oasysgui
 from oasys.widgets import congruence
 
 from PyQt4 import QtGui
@@ -68,7 +68,7 @@ class CollimatingPolycapillary(ow_generic_element.GenericElement):
         tab_bas = oasysgui.createTabPage(tabs_setting, "Basic Setting")
         tab_adv = oasysgui.createTabPage(tabs_setting, "Advanced Setting")
 
-        lens_box = oasysgui.widgetBox(tab_bas, "Input Parameters", addSpace=False, orientation="vertical", height=600, width=450)
+        lens_box = oasysgui.widgetBox(tab_bas, "Input Parameters", addSpace=False, orientation="vertical", width=450, height=600)
 
         oasysgui.lineEdit(lens_box, self, "source_plane_distance", "Source Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")
         oasysgui.lineEdit(lens_box, self, "image_plane_distance", "Image Plane Distance [cm]", labelWidth=350, valueType=float, orientation="horizontal")

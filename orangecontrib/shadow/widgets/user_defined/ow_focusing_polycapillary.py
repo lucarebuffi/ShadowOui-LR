@@ -2,8 +2,7 @@ import sys, numpy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
-
-from oasys.widgets.gui import gui as oasysgui
+from oasys.widgets import gui as oasysgui
 from oasys.widgets import congruence
 
 from PyQt4 import QtGui
