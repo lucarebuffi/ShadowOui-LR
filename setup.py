@@ -7,7 +7,7 @@ import subprocess
 
 NAME = 'ShadowOui-LR'
 
-VERSION = '1.0.8'
+VERSION = '1.0.9'
 ISRELEASED = False
 
 DESCRIPTION = 'Shadow, Ray-tracing simulation software, Customized utilities'
@@ -59,7 +59,9 @@ PACKAGES = find_packages(
                          exclude = ('*.tests', '*.tests.*', 'tests.*', 'tests'),
                          )
 
-PACKAGE_DATA = {"orangecontrib.shadow.widgets.user_defined":["icons/*.png", "icons/*.jpg"],
+PACKAGE_DATA = {"orangecontrib.shadow.widgets.policapillary_optics":["icons/*.png", "icons/*.jpg"],
+                "orangecontrib.shadow.widgets.wavefront":["icons/*.png", "icons/*.jpg"],
+                "orangecontrib.shadow.widgets.miscellanea":["icons/*.png", "icons/*.jpg"],
 }
 
 SETUP_REQUIRES = (
@@ -76,7 +78,9 @@ NAMESPACE_PACAKGES = ["orangecontrib", "orangecontrib.shadow", "orangecontrib.sh
 
 ENTRY_POINTS = {
     'oasys.addons' : ("shadow = orangecontrib.shadow", ),
-    'oasys.widgets' : ("Shadow User Defined = orangecontrib.shadow.widgets.user_defined",
+    'oasys.widgets' : ("Shadow LR Polycapillary Optics = orangecontrib.shadow.widgets.policapillary_optics",
+                       "Shadow LR Wavefront Tools = orangecontrib.shadow.widgets.wavefront",
+                       "Shadow LR Miscellanea = orangecontrib.shadow.widgets.miscellanea",
     ),
 }
 

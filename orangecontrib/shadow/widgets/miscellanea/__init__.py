@@ -9,12 +9,12 @@ Widgets for association rules.
 
 # Category description for the widget registry
 
-NAME = "User Defined"
+NAME = "Miscellanea"
 
-DESCRIPTION = "Widgets for Shadow - User Defined."
+DESCRIPTION = "Widgets for Shadow - Miscellanea."
 
 BACKGROUND = "#FFFFFF"
 
-ICON = "icons/user_defined.jpg"
+ICON = "icons/miscellanea.png"
 
-PRIORITY = 109
+PRIORITY = 111
