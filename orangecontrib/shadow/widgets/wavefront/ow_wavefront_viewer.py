@@ -16,12 +16,12 @@ from orangecontrib.shadow.util.shadow_util import ShadowCongruence, ShadowMath
 
 class WavefrontViewer(ow_generic_element.GenericElement):
     name = "Wavefront Viewer"
-    description = "User Defined: Wavefront Viewer"
+    description = "Wavefront Tools: Wavefront Viewer"
     icon = "icons/viewer.png"
     maintainer = "Luca Rebuffi"
     maintainer_email = "luca.rebuffi(@at@)elettra.eu"
     priority = 1
-    category = "User Defined"
+    category = "Wavefront Tools"
     keywords = ["data", "file", "load", "read"]
 
     inputs = [("Input Beam", ShadowBeam, "setBeam")]
@@ -51,7 +51,7 @@ class WavefrontViewer(ow_generic_element.GenericElement):
 
         button_box = oasysgui.widgetBox(self.controlArea, "", addSpace=False, orientation="horizontal")
 
-        button = gui.button(button_box, self, "Run Shadow/trace", callback=self.traceOpticalElement)
+        button = gui.button(button_box, self, "Reconstruct Wavefront", callback=self.reconstructWavefront)
         font = QFont(button.font())
         font.setBold(True)
         button.setFont(font)
@@ -95,7 +95,7 @@ class WavefrontViewer(ow_generic_element.GenericElement):
     def checkFields(self):
         congruence.checkStrictlyPositiveNumber(self.element_before, "Number of OEs before")
 
-    def traceOpticalElement(self):
+    def reconstructWavefront(self):
         try:
             self.error(self.error_id)
             self.setStatusMessage("")
@@ -140,12 +140,16 @@ class WavefrontViewer(ow_generic_element.GenericElement):
 
                     delta_calculated = numpy.round(numpy.degrees(numpy.arctan(numpy.tan(beta) - (numpy.sin(alpha)/numpy.cos(beta)))), 4)
 
-                    max_y = numpy.max(beam_out._beam.rays[:, 1])
-                    max_z = numpy.max(beam_out._beam.rays[:, 2])
-                    min_y = numpy.min(beam_out._beam.rays[:, 1])
-                    min_z = numpy.min(beam_out._beam.rays[:, 2])
 
-                    delta_shadow = -numpy.round(numpy.degrees(numpy.arctan((max_y-min_y)/(max_z-min_z))), 4)
+                    # y max
+                    cursor_1 = numpy.where(beam_out._beam.rays[:, 1]==numpy.max(beam_out._beam.rays[:, 1]))
+                    cursor_2 = numpy.where(beam_out._beam.rays[:, 1]==numpy.min(beam_out._beam.rays[:, 1]))
+
+                    point_1 = [beam_out._beam.rays[cursor_1, 2][0][0], beam_out._beam.rays[cursor_1, 1][0][0]]
+                    point_2 = [beam_out._beam.rays[cursor_2, 2][0][0], beam_out._beam.rays[cursor_2, 1][0][0]]
+
+
+                    delta_shadow = numpy.round(numpy.degrees(numpy.arctan((point_1[1]-point_2[1])/(point_1[0]-point_2[0]))), 4)
 
                     self.delta_angle_calculated = delta_calculated
                     self.delta_angle_shadow = delta_shadow
@@ -186,38 +190,38 @@ class WavefrontViewer(ow_generic_element.GenericElement):
             self.input_beam = beam
 
             if self.is_automatic_run:
-                self.traceOpticalElement()
+                self.reconstructWavefront()
 
 
     def getVariablestoPlot(self):
-        return [[1, 3], [1, 2], [3, 2], [4, 6], 13]
+        return [[3, 2], [1, 2], [1, 3], [4, 6], 13]
 
     def getTitles(self):
-        return ["X,Z", "X,Y", "Z,Y", "X',Z'", "Optical Path"]
+        return ["Z,Y", "X,Y", "X,Z", "X',Z'", "Optical Path"]
 
     def getXTitles(self):
-        return ["X [" + self.workspace_units_label + "]",
+        return ["Z [" + self.workspace_units_label + "]",
                 "X [" + self.workspace_units_label + "]",
-                "Z [" + self.workspace_units_label + "]",
+                "X [" + self.workspace_units_label + "]",
                 "X' [rad]", "Optical Path [" + self.workspace_units_label + "]"]
 
     def getYTitles(self):
-        return ["Z [" + self.workspace_units_label + "]",
+        return ["Y [" + self.workspace_units_label + "]",
                 "Y [" + self.workspace_units_label + "]",
-                "Y [" + self.workspace_units_label + "]",
+                "Z [" + self.workspace_units_label + "]",
                 "Z' [rad]",
                 "Number of Rays"]
 
     def getXUM(self):
-        return ["X [" + self.workspace_units_label + "]",
+        return ["Z [" + self.workspace_units_label + "]",
                 "X [" + self.workspace_units_label + "]",
-                "Z [" + self.workspace_units_label + "]",
+                "X [" + self.workspace_units_label + "]",
                 "X' [rad]", "Optical Path [" + self.workspace_units_label + "]"]
 
     def getYUM(self):
-        return ["Z [" + self.workspace_units_label + "]",
+        return ["Y [" + self.workspace_units_label + "]",
                 "Y [" + self.workspace_units_label + "]",
-                "Y [" + self.workspace_units_label + "]",
+                "Z [" + self.workspace_units_label + "]",
                 "Z' [rad]",
                 None]
 
