@@ -1,13 +1,12 @@
 import numpy
 
 from orangecontrib.shadow.util.shadow_objects import ShadowBeam
-from orangecontrib.shadow.util.shadow_util import ShadowPlot
+from orangecontrib.shadow.util.shadow_util import ShadowPlot, ShadowPhysics
 from orangecontrib.shadow.widgets.plots import ow_plot_xy
 
 from orangewidget import gui
 from orangewidget.settings import Setting
 from oasys.widgets import gui as oasysgui
-from oasys.widgets import congruence
 
 import PyMca5.PyMcaGui.plotting.PlotWindow as PlotWindow
 
@@ -29,7 +28,8 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
 
     inputs = [("Input Beam", ShadowBeam, "setBeam")]
 
-    spectro_number_of_bins = Setting(0)
+    spectro_variable = Setting(0)
+    spectro_number_of_bins = Setting(9)
     spectro_plot_canvas = None
 
     plotted_beam = None
@@ -41,7 +41,12 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
 
         spectro_box = oasysgui.widgetBox(tab_spe, "Spectroscopy settings", addSpace=True, orientation="vertical", height=100)
 
-        gui.comboBox(spectro_box, self, "spectro_number_of_bins", label="Number of Bins",labelWidth=350,
+        gui.comboBox(spectro_box, self, "spectro_variable", label="Spectroscopy Variable", labelWidth=300,
+                     items=["Energy",
+                            "Wavelength"],
+                     sendSelectedValue=False, orientation="horizontal")
+
+        gui.comboBox(spectro_box, self, "spectro_number_of_bins", label="Number of Bins", labelWidth=350,
                      items=["1",
                             "2",
                             "3",
@@ -71,9 +76,10 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
             if self.spectro_plot_canvas is None:
                 self.spectro_plot_canvas = PlotWindow.PlotWindow(roi=False, control=False, position=False, plugins=False, logx=False, logy=False)
                 self.spectro_plot_canvas.setDefaultPlotLines(False)
+                self.spectro_plot_canvas.setDefaultPlotPoints(True)
+                self.spectro_plot_canvas.setZoomModeEnabled(True)
                 self.spectro_plot_canvas.setMinimumWidth(673)
                 self.spectro_plot_canvas.setMaximumWidth(673)
-                self.spectro_plot_canvas.setZoomModeEnabled(True)
                 pos = self.spectro_plot_canvas._plot.graph.ax.get_position()
                 self.spectro_plot_canvas._plot.graph.ax.set_position([pos.x0, pos.y0 , pos.width*0.86, pos.height])
                 pos = self.spectro_plot_canvas._plot.graph.ax2.get_position()
@@ -83,9 +89,10 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
                 self.spectro_image_box.layout().addWidget(self.spectro_plot_canvas)
             else:
                 self.spectro_plot_canvas.clear()
+                self.spectro_plot_canvas.setDefaultPlotLines(False)
+                self.spectro_plot_canvas.setDefaultPlotPoints(True)
                 ax3 = self.spectro_plot_canvas._plot.graph.fig.axes[-1]
                 ax3.cla()
-
 
             number_of_bins = self.spectro_number_of_bins + 1
 
@@ -98,16 +105,30 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
             min_k = numpy.min(self.plotted_beam._beam.rays[:, 10])
             max_k = numpy.max(self.plotted_beam._beam.rays[:, 10])
 
-            bins = min_k + numpy.arange(0, number_of_bins + 1)*((max_k-min_k)/number_of_bins)
+            if self.spectro_variable == 0: #Energy
+                energy_min = ShadowPhysics.getEnergyFromShadowK(min_k)
+                energy_max = ShadowPhysics.getEnergyFromShadowK(max_k)
 
-            normalization = colors.Normalize(vmin=min_k, vmax=max_k)
+                bins = energy_min + numpy.arange(0, number_of_bins + 1)*((energy_max-energy_min)/number_of_bins)
+                normalization = colors.Normalize(vmin=energy_min, vmax=energy_max)
+            else: #wavelength
+                wavelength_min = ShadowPhysics.getWavelengthfromShadowK(max_k)
+                wavelength_max = ShadowPhysics.getWavelengthfromShadowK(min_k)
+
+                bins = wavelength_min + numpy.arange(0, number_of_bins + 1)*((wavelength_max-wavelength_min)/number_of_bins)
+                normalization = colors.Normalize(vmin=wavelength_min, vmax=wavelength_max)
+
             scalarMap = cmx.ScalarMappable(norm=normalization, cmap=self.color_map)
 
             cb1 = colorbar.ColorbarBase(ax3,
                                         cmap=self.color_map,
                                         norm=normalization,
                                         orientation='vertical')
-            cb1.set_label('Wavevector modulus |k| [Å-1]')
+
+            if self.spectro_variable == 0: #Energy
+                cb1.set_label('Energy [eV]')
+            else:
+                cb1.set_label('Wavelength [Å]')
 
             go = numpy.where(self.plotted_beam._beam.rays[:, 9] == 1)
             lo = numpy.where(self.plotted_beam._beam.rays[:, 9] != 1)
@@ -127,11 +148,19 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
                 max_value = bins[index+1]
 
                 if index < number_of_bins-1:
-                    cursor = numpy.where((numpy.round(rays_to_plot[:, 10], 4) >= numpy.round(min_value, 4)) &
-                                         (numpy.round(rays_to_plot[:, 10], 4) < numpy.round(max_value, 4)))
+                    if self.spectro_variable == 0: #Energy
+                        cursor = numpy.where((numpy.round(ShadowPhysics.getEnergyFromShadowK(rays_to_plot[:, 10]), 4) >= numpy.round(min_value, 4)) &
+                                             (numpy.round(ShadowPhysics.getEnergyFromShadowK(rays_to_plot[:, 10]), 4) < numpy.round(max_value, 4)))
+                    else:
+                        cursor = numpy.where((numpy.round(ShadowPhysics.getWavelengthfromShadowK(rays_to_plot[:, 10]), 4) >= numpy.round(min_value, 4)) &
+                                             (numpy.round(ShadowPhysics.getWavelengthfromShadowK(rays_to_plot[:, 10]), 4) < numpy.round(max_value, 4)))
                 else:
-                    cursor = numpy.where((numpy.round(rays_to_plot[:, 10], 4) >= numpy.round(min_value, 4)) &
-                                         (numpy.round(rays_to_plot[:, 10], 4) <= numpy.round(max_value, 4)))
+                    if self.spectro_variable == 0: #Energy
+                        cursor = numpy.where((numpy.round(ShadowPhysics.getEnergyFromShadowK(rays_to_plot[:, 10]), 4) >= numpy.round(min_value, 4)) &
+                                             (numpy.round(ShadowPhysics.getEnergyFromShadowK(rays_to_plot[:, 10]), 4) <= numpy.round(max_value, 4)))
+                    else:
+                        cursor = numpy.where((numpy.round(ShadowPhysics.getWavelengthfromShadowK(rays_to_plot[:, 10]), 4) >= numpy.round(min_value, 4)) &
+                                             (numpy.round(ShadowPhysics.getWavelengthfromShadowK(rays_to_plot[:, 10]), 4) <= numpy.round(max_value, 4)))
 
                 color = scalarMap.to_rgba((bins[index] + bins[index+1])/2)
 
@@ -171,37 +200,9 @@ class WavefrontPlotXY(ow_plot_xy.PlotXY):
         self.plotted_beam = new_shadow_beam
 
 from PyQt4.QtGui import QApplication
-from random import Random
 
 if __name__ == "__main__":
-    print(numpy.arange(1, 10))
-
-    '''
-
     app = QApplication([])
 
-    spectro_plot_canvas = PlotWindow.PlotWindow(roi=False, control=False, position=False, plugins=False, logx=False, logy=False)
-    spectro_plot_canvas.setDefaultPlotLines(True)
-    spectro_plot_canvas.setMinimumWidth(673)
-    spectro_plot_canvas.setMaximumWidth(673)
-    spectro_plot_canvas.setDrawModeEnabled(True, 'rectangle')
-    spectro_plot_canvas.setZoomModeEnabled(True)
-
-    color_map = plt.cm.get_cmap('Blues')
-    normalization = colors.Normalize(vmin=0, vmax=100)
-    scalarMap = cmx.ScalarMappable(norm=normalization, cmap=color_map)
-
-    random = Random()
-
-    for index in range (0, 100):
-        if index == 0:  spectro_plot_canvas.setActiveCurveColor(color=scalarMap.to_rgba(0))
-
-        spectro_plot_canvas.addCurve([index], [index+100], "ciao" + str(index), symbol='.', color=scalarMap.to_rgba(int(100*random.random())), replace=False)
-
-    spectro_plot_canvas.show()
-
-    spectro_plot_canvas.setGraphXLimits(-1, 100, replot=True)
-    spectro_plot_canvas.setGraphYLimits(99, 200, replot=True)
 
     app.exec_()
-    '''
