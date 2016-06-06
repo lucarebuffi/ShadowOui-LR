@@ -9,10 +9,8 @@ from PyQt4 import QtGui
 from PyQt4.QtGui import QPalette, QColor, QFont
 
 from orangecontrib.shadow.widgets.gui import ow_generic_element
-from orangecontrib.shadow.util.shadow_objects import EmittingStream, TTYGrabber, ShadowTriggerIn, \
-    ShadowPreProcessorData, ShadowBeam, ShadowOpticalElement
-from orangecontrib.shadow.util.shadow_util import ShadowCongruence, ShadowMath
-
+from orangecontrib.shadow.util.shadow_objects import EmittingStream, TTYGrabber, ShadowTriggerIn, ShadowBeam
+from orangecontrib.shadow.util.shadow_util import ShadowCongruence
 
 class WavefrontViewer(ow_generic_element.GenericElement):
     name = "Wavefront Viewer"
@@ -139,7 +137,6 @@ class WavefrontViewer(ow_generic_element.GenericElement):
                     beta = last_element._shadow_oe_end._oe.T_REFLECTION
 
                     delta_calculated = numpy.round(numpy.degrees(numpy.arctan(numpy.tan(beta) - (numpy.sin(alpha)/numpy.cos(beta)))), 4)
-
 
                     # y max
                     cursor_1 = numpy.where(beam_out._beam.rays[:, 1]==numpy.max(beam_out._beam.rays[:, 1]))
