@@ -5,9 +5,14 @@ import os
 import sys
 import subprocess
 
+try:
+    from setuptools import find_packages, setup
+except AttributeError:
+    from setuptools import find_packages, setup
+
 NAME = 'ShadowOui-LR'
 
-VERSION = '1.0.12'
+VERSION = '1.0.13'
 ISRELEASED = False
 
 DESCRIPTION = 'Shadow, Ray-tracing simulation software, Customized utilities'
